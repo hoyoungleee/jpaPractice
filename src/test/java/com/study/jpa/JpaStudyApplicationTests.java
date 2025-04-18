@@ -51,13 +51,32 @@ class JpaStudyApplicationTests {
     void persistTest() {
         // given: 준비 -> 테스트에 사용할 변수, 입력값 등을 정의하는 곳.
         Product product = new Product();
-        product.setName("짜장면");
-        product.setPrice(8000);
+        product.setName("탕수육");
+        product.setPrice(18000);
         product.setCategory(Product.Category.FOOD);
         // when: 실행 -> 테스트를 실행하는 메인 로직
         em.persist(product);
+        Product foundProd = em.find(Product.class, 1L);
+        // then: 검증 -> 예상한 값, 실제 실행한 값을 확인하는 부분.
+        assertEquals(90000, foundProd.getPrice());
+    }
+
+    @Test
+    @DisplayName("특정 상품의 가격을 수정한다.")
+    void updateTest() {
+        // given: 준비 -> 테스트에 사용할 변수, 입력값 등을 정의하는 곳.
+        Product noodle = em.find(Product.class, 2L);
+        // when: 실행 -> 테스트를 실행하는 메인 로직
+        noodle.setPrice(5000);
+        noodle.setName("미니짜장면");
+        // 엔터티를 변경 후에 영속성 컨텍스트에 넣어놓으면
+        // 변경사항을 감지하여 update를 반영합니다.
+        em.persist(noodle);
+
+        em.flush(); //지금까지 반영된 영속성 컨텍스트를 DB에 바로 적용.
+        em.clear(); //영속성 컨텍스트 비우기
+
         Product foundProd = em.find(Product.class, 2L);
         // then: 검증 -> 예상한 값, 실제 실행한 값을 확인하는 부분.
-        assertEquals(8000, foundProd.getPrice());
     }
 }
