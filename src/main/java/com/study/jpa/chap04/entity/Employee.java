@@ -5,7 +5,7 @@ import lombok.*;
 
 @Setter
 @Getter
-@ToString
+@ToString(exclude = "department")
 @EqualsAndHashCode(of="id")
 @NoArgsConstructor
 @AllArgsConstructor
