@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -42,7 +43,14 @@ class StudentPageRepositoryTest {
         int amount = 10; // 한페이지에 보여줄 양
         // 페이지 정보 객체 생성 (Pageable)
         // 여기서는 페이지 번호가 zero-based임: 1페이지를 0으로 취급
-        Pageable pageable = PageRequest.of(pageNo -1, amount);
+        // 페이징과 함께 정렬할때는 pageable 객체 생성 시 정렬 조건 지정.
+        Pageable pageable = PageRequest.of(pageNo -1, amount ,
+//                Sort.by("name").descending() 단건으로 바로 정렬시
+            Sort.by(
+    //                Sort.Order.desc("id"),
+                    Sort.Order.asc("city")
+            )
+        );
         // when: 실행 -> 테스트를 실행하는 메인 로직
         Page<Student> students = studentPageRepository.findAll(pageable);
 
@@ -106,6 +114,34 @@ class StudentPageRepositoryTest {
         System.out.println("totalPages = " + totalPages);
         System.out.println("totalElements = " + totalElements);
         System.out.println("studentList = " + studentList);
+        System.out.println("\n\n\n");
+    }
+
+    @Test
+    @DisplayName("여러가지 정렬 방식")
+    void sortTest() {
+        // given: 준비 -> 테스트에 사용할 변수, 입력값 등을 정의하는 곳.
+        String name = "3";
+
+        // when: 실행 -> 테스트를 실행하는 메인 로직
+        List<Student> list = studentPageRepository.findByNameContainingOrderByMajorDesc(name);
+
+        // then: 검증 -> 예상한 값, 실제 실행한 값을 확인하는 부분.
+        System.out.println("\n\n\n");
+        list.forEach(System.out::println);
+        System.out.println("\n\n\n");
+    }
+
+    @Test
+    @DisplayName("매개값 Sort 객체로 정렬")
+    void sortTest2() {
+        // given: 준비 -> 테스트에 사용할 변수, 입력값 등을 정의하는 곳.
+
+        // when: 실행 -> 테스트를 실행하는 메인 로직
+        List<Student> list = studentPageRepository.findByNameContaining("5", Sort.by(Sort.Order.desc("City")));
+        // then: 검증 -> 예상한 값, 실제 실행한 값을 확인하는 부분.
+        System.out.println("\n\n\n");
+        list.forEach(System.out::println);
         System.out.println("\n\n\n");
     }
 }
