@@ -28,8 +28,8 @@ class StudentPageRepositoryTest {
         for (int i = 1; i <= 147; i++) {
             Student s = Student.builder()
                     .name("김메롱" + i)
-                    .city("무슨무슨시"+ i)
-                    .major("어쩔전공"+i)
+                    .city("무슨무슨시" + i)
+                    .major("어쩌구저쩌구" + i)
                     .build();
             studentPageRepository.save(s);
         }
@@ -38,20 +38,24 @@ class StudentPageRepositoryTest {
     @Test
     @DisplayName("기본적인 페이지 조회 테스트")
     void basicPageTest() {
-        // given: 준비 -> 테스트에 사용할 변수, 입력값 등을 정의하는 곳.
-        int pageNo = 6;// 사용자가 머무는 페이지 번호
-        int amount = 10; // 한페이지에 보여줄 양
+        // given
+        int pageNo = 6; // 사용자가 머무는 페이지 번호
+        int amount = 10; // 한 페이지에 보여줄 양
+
         // 페이지 정보 객체 생성 (Pageable)
         // 여기서는 페이지 번호가 zero-based임: 1페이지를 0으로 취급
-        // 페이징과 함께 정렬할때는 pageable 객체 생성 시 정렬 조건 지정.
-        Pageable pageable = PageRequest.of(pageNo -1, amount ,
-//                Sort.by("name").descending() 단건으로 바로 정렬시
-            Sort.by(
-    //                Sort.Order.desc("id"),
+        // 페이징과 함께 정렬할 때는 pageable 객체 생성 시 정렬 조건 지정.
+        Pageable pageable = PageRequest.of(
+                pageNo - 1,
+                amount,
+//                Sort.by("name").descending()
+                Sort.by(
+//                    Sort.Order.desc("id"),
                     Sort.Order.asc("city")
-            )
+                )
         );
-        // when: 실행 -> 테스트를 실행하는 메인 로직
+
+        // when
         Page<Student> students = studentPageRepository.findAll(pageable);
 
         // 실질적 데이터 꺼내기
@@ -63,70 +67,64 @@ class StudentPageRepositoryTest {
         // 총 학생 수
         long totalElements = students.getTotalElements();
 
-        // 현재 페이지 기준 이전, 다음페이지 존재여부
+        // 현재 페이지 기준 이전, 다음 페이지 존재 여부
         boolean next = students.hasNext();
         boolean prev = students.hasPrevious();
 
-
-        // then: 검증 -> 예상한 값, 실제 실행한 값을 확인하는 부분.
+        // then
         System.out.println("\n\n\n");
-        System.out.println("prev = " + prev);
-        System.out.println("next = " + next);
         System.out.println("totalPages = " + totalPages);
         System.out.println("totalElements = " + totalElements);
-        System.out.println("studentList = " + studentList);
+        System.out.println("next = " + next);
+        System.out.println("prev = " + prev);
+        studentList.forEach(System.out::println);
         System.out.println("\n\n\n");
     }
 
-    /*
-     페이징 처리 시에 버튼 알고리즘은 jpa에서 따로 제공하지 않기 때문에
-     버튼 배치 알고리즘을 수행할 클래스는 여전히 필요합니다.
-     제공되는 정보는 이전보다 많기 때문에, 좀 더 수월하게 처리가 가능합니다.
-     */
     @Test
     @DisplayName("이름검색 + 페이징")
     void testSearchAndPaging() {
-        // given: 준비 -> 테스트에 사용할 변수, 입력값 등을 정의하는 곳.
+        // given
         int pageNo = 3;
         int amount = 6;
-        Pageable pageable = PageRequest.of(pageNo -1, amount);
+        Pageable pageable = PageRequest.of(pageNo - 1, amount);
 
-        // when: 실행 -> 테스트를 실행하는 메인 로직
-        Page<Student> students = studentPageRepository.findByNameContaining("3",pageable);
+        // when
+        Page<Student> page
+                = studentPageRepository.findByNameContaining("3", pageable);
 
-        // 실질적 데이터 꺼내기
-        List<Student> studentList = students.getContent();
+        List<Student> studentList = page.getContent();
+        int totalPages = page.getTotalPages();
+        long totalElements = page.getTotalElements();
+        boolean next = page.hasNext();
 
-        // 총 페이지 수
-        int totalPages = students.getTotalPages();
+        /*
+         페이징 처리 시에 버튼 알고리즘은 jpa에서 따로 제공하지 않기 때문에
+         버튼 배치 알고리즘을 수행할 클래스는 여전히 필요합니다.
+         제공되는 정보는 이전보다 많기 때문에, 좀 더 수월하게 처리가 가능합니다.
+         */
 
-        // 총 학생 수
-        long totalElements = students.getTotalElements();
-
-        // 현재 페이지 기준 이전, 다음페이지 존재여부
-        boolean next = students.hasNext();
-        boolean prev = students.hasPrevious();
-
-        // then: 검증 -> 예상한 값, 실제 실행한 값을 확인하는 부분.
+        // then
         System.out.println("\n\n\n");
-        System.out.println("prev = " + prev);
-        System.out.println("next = " + next);
         System.out.println("totalPages = " + totalPages);
         System.out.println("totalElements = " + totalElements);
-        System.out.println("studentList = " + studentList);
+        System.out.println("next = " + next);
+        studentList.forEach(System.out::println);
         System.out.println("\n\n\n");
     }
 
     @Test
     @DisplayName("여러가지 정렬 방식")
     void sortTest() {
-        // given: 준비 -> 테스트에 사용할 변수, 입력값 등을 정의하는 곳.
+        // given
         String name = "3";
 
-        // when: 실행 -> 테스트를 실행하는 메인 로직
-        List<Student> list = studentPageRepository.findByNameContainingOrderByMajorDesc(name);
+        // when
+        List<Student> list
+                = studentPageRepository
+                    .findByNameContainingOrderByMajorDesc(name);
 
-        // then: 검증 -> 예상한 값, 실제 실행한 값을 확인하는 부분.
+        // then
         System.out.println("\n\n\n");
         list.forEach(System.out::println);
         System.out.println("\n\n\n");
@@ -135,13 +133,26 @@ class StudentPageRepositoryTest {
     @Test
     @DisplayName("매개값 Sort 객체로 정렬")
     void sortTest2() {
-        // given: 준비 -> 테스트에 사용할 변수, 입력값 등을 정의하는 곳.
+        // given
 
-        // when: 실행 -> 테스트를 실행하는 메인 로직
-        List<Student> list = studentPageRepository.findByNameContaining("5", Sort.by(Sort.Order.desc("City")));
-        // then: 검증 -> 예상한 값, 실제 실행한 값을 확인하는 부분.
-        System.out.println("\n\n\n");
+        // when
+        List<Student> list
+                = studentPageRepository
+                .findByNameContaining("5",
+                        Sort.by(Sort.Order.desc("city")));
+
+        // then
         list.forEach(System.out::println);
-        System.out.println("\n\n\n");
     }
+
 }
+
+
+
+
+
+
+
+
+
+

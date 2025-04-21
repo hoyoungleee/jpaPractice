@@ -14,10 +14,20 @@ public interface StudentPageRepository extends JpaRepository<Student, String> {
     // 커스텀 메서드를 만들 때 페이지 정보를 얻고 싶으면 Pageable을 매개값으로 받으세요.
     Page<Student> findByNameContaining(String name, Pageable pageable);
 
-    //쿼리 메서드를 통한 정렬
+    // 쿼리 메서드를 통한 정렬
     List<Student> findByNameContainingOrderByMajorDesc(String name);
 
-    //쿼리 메서드를 통한 정렬
+    // 매개값을 통한 정렬
     List<Student> findByNameContaining(String name, Sort sort);
 
 }
+
+
+
+
+
+
+
+
+
+

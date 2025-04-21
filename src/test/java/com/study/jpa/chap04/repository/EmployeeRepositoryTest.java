@@ -54,31 +54,45 @@ class EmployeeRepositoryTest {
     }
 
     @Test
-    @DisplayName("특정 사원의 정보를 조회하면 그 사원의 부서정보도 얻을 수 있을 것이다.")
+    @DisplayName("특정 사원의 정보를 조회하면 그 사원의 부서 정보도 얻을 수 있을 것이다.")
     void testFindOne() {
-        // given: 준비 -> 테스트에 사용할 변수, 입력값 등을 정의하는 곳.
+        // given
         Long id = 2L;
-        // when: 실행 -> 테스트를 실행하는 메인 로직
-        Employee employee = employeeRepository.findById(id).orElseThrow();
 
-        // then: 검증 -> 예상한 값, 실제 실행한 값을 확인하는 부분.
+        // when
+        Employee employee
+                = employeeRepository.findById(id).orElseThrow();
+
+        // then
         System.out.println("\n\n\n");
 //        System.out.println("employee = " + employee);
-        assertEquals("어피치", employee.getName());
-        assertEquals("영업부", employee.getDepartment().getName());
+        assertEquals(employee.getName(), "어피치");
+        assertEquals(employee.getDepartment().getName(), "영업부");
         System.out.println("\n\n\n");
     }
 
     @Test
     @DisplayName("부서 정보 조회")
     void testFindDept() {
-        // given: 준비 -> 테스트에 사용할 변수, 입력값 등을 정의하는 곳.
+        // given
         Long id = 1L;
-        // when: 실행 -> 테스트를 실행하는 메인 로직
-        Department department = departmentRepository.findById(id).orElseThrow();
-        // then: 검증 -> 예상한 값, 실제 실행한 값을 확인하는 부분.
+
+        // when
+        Department department
+                = departmentRepository.findById(id).orElseThrow();
+
+        // then
         System.out.println("\n\n\n");
         System.out.println("department = " + department);
         System.out.println("\n\n\n");
     }
+
 }
+
+
+
+
+
+
+
+

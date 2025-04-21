@@ -8,37 +8,36 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Getter @Setter @ToString
+@EqualsAndHashCode(of = "id") // id 필드가 같으면 같은 객체로 처리하겠다.
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id") // id 필드가 같으면 같은 객체로 처리하겠다.
-//객체를 빌더해줌.
 @Builder
 
 @Entity // 이 클래스는 JPA가 관리한다. 이 클래스는 데이터베이스의 한 행에 정확히 대응한다.
-@Table(name="tbl_product")
+@Table(name = "tbl_product")
 public class Product {
 
-    @Id //pk
-    @GeneratedValue(strategy = GenerationType.IDENTITY)// auto_increment
+    @Id // PK
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto_increment
     @Column(name = "prod_id")
-    private long id;
+    private Long id;
 
-    @Column(name="prod_name", length = 30, nullable = false)
+    @Column(name = "prod_name", length = 30, nullable = false)
     private String name;
 
-    @Column(name="prod_price")
+    @Column(name = "prod_price")
     private int price;
 
     @Column(nullable = false) // not null
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @CreationTimestamp // insert 시에 자동으로 서버 시간 저장
-    @Column(updatable = false) //수정 불가
-    private LocalDateTime createdAt;
+    @CreationTimestamp // INSERT 시에 자동으로 서버 시간 저장
+    @Column(updatable = false) // 수정 불가
+    private LocalDateTime createAt;
 
-    @UpdateTimestamp // update 실행시 자동으로 시간이 저장
-    private LocalDateTime updatedAt;
+    @UpdateTimestamp // update문 실행 시 자동으로 시간이 저장
+    private LocalDateTime updateAt;
 
     // 데이터베이스에는 저장 안하고 클래스 내부에서만 사용할 필드
     @Transient
@@ -47,4 +46,5 @@ public class Product {
     public enum Category {
         FOOD, FASHION, ELECTRONIC
     }
+
 }
